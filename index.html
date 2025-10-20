@@ -1,12 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Portfolio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캡스톤+ 인터페이스</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
-  <p>Hello, World!</p>
+    <header>
+        📦 CAPSTONE+ 문서배달 자율주행 시스템
+    </header>
+    <main>
+        <div class="left_info_zone">
+            <div id="current-position" class="info_box">
+                <div class="time_row">
+                    <strong>[현재시간]</strong> : <span id="current_time">(현재시간이 표시됩니다)</span>
+                </div>
+                <div id="map" style="width:100%;height:220px;margin-top:10px;"></div>
+            </div>
+            <div id="target_goal" class="info_box">
+                <strong>[현재 목표 도착지] </strong> <span id="goal_value">(현재 목표 도착지 명이 들어갑니다)</span>
+                <strong>[진행률] </strong> <span id="goal_percent">(현재 진행률이 들어갑니다)</span>
+            </div>
+        </div>
+        <div class="button_zone">
+            <button class="receiver_button">
+                <div class="receiver_name">(문서 수령자 이름이 들어갑니다)</div>
+                <div class="complete_text">수령완료시 버튼을 눌러주세요</div>
+            </button>
+            <div class ="bottom_buttons">
+                <button class="extra_button_1">추가 버튼 1</button>
+                <button class="extra_button_2">추가 버튼 2</button>
+            </div>
+        </div>
+    </main>
+    <footer>
+        &copy; 2025 CAPSTONE+ Team. 도큐딜리. All rights reserved.
+    </footer>
+<script>
+document.querySelector('.extra_button_1').addEventListener('click', function() {
+    fetch('/button1', {method: 'POST'});
+});
+document.querySelector('.extra_button_2').addEventListener('click', function() {
+    fetch('/button2', {method: 'POST'});
+});
+document.querySelector('.receiver_button').addEventListener('click', function() {
+    fetch('/receiver', {method: 'POST'});
+});
+
+setInterval(() => {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('ko-KR', { hour12: false });
+    document.getElementById('current_time').innerText = timeStr;
+}, 1000);
+
+// 지도 생성 및 실시간 좌표 반영
+let map, marker;
+fetch('/coord').then(res => res.json()).then(data => {
+    map = L.map('map', { maxZoom: 19 }).setView([data.lat, data.lng], 19);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(map);
+    marker = L.marker([data.lat, data.lng]).addTo(map);
+});
+
+setInterval(async () => {
+    const res = await fetch('/coord');
+    const data = await res.json();
+    if (marker && map) {
+        marker.setLatLng([data.lat, data.lng]);
+        map.setView([data.lat, data.lng]);
+    }
+}, 1000);
+
+// 진행률 실시간 반영
+setInterval(async () => {
+    const res = await fetch('/progress');
+    const data = await res.json();
+    document.getElementById('goal_percent').innerText = data.percent + "%";
+}, 1000);
+
+// 목표 도착지 실시간 반영
+setInterval(async () => {
+    const res = await fetch('/goal');
+    const data = await res.json();
+    document.getElementById('goal_value').innerText = data.goal;
+}, 1000);
+
+// 수신자 이름 실시간 반영
+setInterval(async () => {
+    const res = await fetch('/receiver_name');
+    const data = await res.json();
+    document.querySelector('.receiver_name').innerText = data.name;
+}, 1000);
+</script>
 </body>
 </html>
