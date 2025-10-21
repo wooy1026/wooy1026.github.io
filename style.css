@@ -1,5 +1,5 @@
 body {
-	background: #FFF2E0;
+	background: #F5F5F5;
 }
 /* 컨테이너 중앙 정렬 및 최대 폭 제한 */
 .container {
@@ -19,7 +19,7 @@ body {
 }
 
 .sidebar {
-    background: #898AC4; /* 콘텐츠 영역과 동일 */
+    background: #229799; /* 콘텐츠 영역과 동일 */
     color: #2D2D2D; /* 진한 텍스트 */
     width: 250px;
     min-height: 400px;
@@ -28,34 +28,37 @@ body {
     box-sizing: border-box;
     font-size: 1.1rem;
     border-radius: 0;
-    box-shadow: 2px 0 8px #F8C8C466; /* 연한 그림자 */
     padding: 10px;
     gap: 10px;
     flex-direction: column;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15)
 }
 
 .sidebar-box {
     width: 90%;
     aspect-ratio: 1/1;
-    background: #ffffff;
     border-radius: 50%;
     box-sizing: border-box;
+    background-image: url(https://i.namu.wiki/i/_VR5WHEDuh8GTDefHS5Q9hRraEwIEwHVMMFNwzr3uDAgXeQ-2ht67CM8tj4KtttckiCj7-VOdzeOQnpSz7ks8w.webp);
+    background-size: cover;
+    background-position: center;
 }
 
 .content {
 	flex: 1 1 auto;
-	background: #C0C9EE; /* 메인 콘텐츠 영역 파스텔 블루 */
-	color: #2D2D2D; /* 진한 텍스트 */
+	background: #ffffff;
+	color: #2D2D2D; 
 	border-radius: 0;
 	min-height: 600px;
-	padding: 10px;
+	padding: 20px 30px 0px 30px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15)
 }
 
 .sidebar-textbox{
-    color: #F2EFE7;
+    color: #F5F5F5;
     text-align: center;
     font-size: 15px;
 }
@@ -68,7 +71,7 @@ body {
 }
 
 .github, .discord, .instagram {
-    fill: #F2EFE7;
+    fill: #F5F5F5;
     transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
     width: 40px;
     height: 40px;
@@ -92,8 +95,16 @@ body {
     fill: #FF0069;
 }
 
-hr {
-    border: none;
-    border-top: 3px solid #ffffff;
-    margin: 14px 0;
+.About_title {
+    color: #229799;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.About_textbox {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #424242;
+    max-width: 800px;
 }
