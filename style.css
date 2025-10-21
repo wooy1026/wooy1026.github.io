@@ -1,0 +1,99 @@
+body {
+	background: #FFF2E0;
+}
+/* 컨테이너 중앙 정렬 및 최대 폭 제한 */
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	width: 100%;
+	box-sizing: border-box;
+}
+/* 메인 영역 레이아웃 */
+.main-area {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	min-height: 400px;
+	margin-top: 16px;
+	column-gap: 16px;
+}
+
+.sidebar {
+    background: #898AC4; /* 콘텐츠 영역과 동일 */
+    color: #2D2D2D; /* 진한 텍스트 */
+    width: 250px;
+    min-height: 400px;
+    height: 400px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    font-size: 1.1rem;
+    border-radius: 0;
+    box-shadow: 2px 0 8px #F8C8C466; /* 연한 그림자 */
+    padding: 10px;
+    gap: 10px;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-box {
+    width: 90%;
+    aspect-ratio: 1/1;
+    background: #ffffff;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.content {
+	flex: 1 1 auto;
+	background: #C0C9EE; /* 메인 콘텐츠 영역 파스텔 블루 */
+	color: #2D2D2D; /* 진한 텍스트 */
+	border-radius: 0;
+	min-height: 600px;
+	padding: 10px;
+}
+
+.sidebar-textbox{
+    color: #F2EFE7;
+    text-align: center;
+    font-size: 15px;
+}
+
+.info-graphics {
+    height: auto;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.github, .discord, .instagram {
+    fill: #F2EFE7;
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 40px;
+    height: 40px;
+}
+
+.github:hover, .discord:hover, .instagram:hover {
+    transform: scale(1.08);
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    transition: fill 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.github:hover {
+    fill: #181717;
+}
+
+.discord:hover {
+    fill: #5865F2;
+}
+
+.instagram:hover {
+    fill: #FF0069;
+}
+
+hr {
+    border: none;
+    border-top: 3px solid #ffffff;
+    margin: 14px 0;
+}
