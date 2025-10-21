@@ -7,7 +7,19 @@ hr {
     border: none;
     border-top: 3px solid #48CFCB71;
     border-radius: 70%;
-    margin: 20px 0;
+    margin: 10px 0;
+}
+
+#index-img {
+    width: 20%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+#index-img:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
 }
 
 .container {
@@ -126,6 +138,7 @@ hr {
 
 .detail-btn {
     margin-left: auto;
+    margin-bottom: 10px;
     font-size: 16px;
     color: #229799;
     text-decoration: none;
@@ -174,3 +187,8 @@ hr {
     background-color: #1a6e6e;
 }
 
+.gallery-images {
+    justify-content: center;
+    display: flex;
+    gap: 30px;
+}
