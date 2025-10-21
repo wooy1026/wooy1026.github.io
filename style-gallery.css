@@ -13,14 +13,16 @@ body {
 .container {
     padding: 15px;
 }
-.container, .image-container {
-    columns: 15rem 3;
+.image-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 1.4rem;
 }
 
-.container, .image-container img {
+.image-container img {
     width: 100%;
-    margin-bottom: 1rem;
+    height: auto;
+    display: block;
 }
 
 img{
