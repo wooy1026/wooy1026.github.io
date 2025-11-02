@@ -1,20 +1,272 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>신비로우엉</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/gh/naver/d2coding-font@latest/web/D2Coding.css" rel="stylesheet" type="text/css">
-</head><body>
-    <div class="container">
-        <div class="main-area">
-            <div class="content">
-                <div class="content_box">
-                    <div class="content_title">About.</div>
-                    <div class="back_btn" onclick="location.href='index.html'"> 《 홈으로 </div>
-            </div>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>신비로우엉 — About</title>
+<link href="https://cdn.jsdelivr.net/gh/naver/d2coding-font@latest/web/D2Coding.css" rel="stylesheet" type="text/css" />
+<style>
+  :root {
+    --accent: #229799;
+    --bg: #F5F5F5;
+    --ink: #2D2D2D;
+    --card: #FFFFFF;
+    --shadow: 0 4px 16px rgba(0,0,0,.15);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    
+  }
+
+  .back-btn {
+  position: absolute;      /* 상단 고정 */
+  top: 16px;
+  right: 24px;
+
+  font-size: 16px;
+  color: #229799;
+  text-decoration: none;
+  cursor: pointer;
+
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.back-btn:hover {
+  transform: translateX(-10px);
+}
+
+
+  .box {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  .page {
+    background: var(--card);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    overflow: clip;
+  }
+
+  /* 헤더 */
+  .header {
+    position: relative;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #d7f0ef, #f1fbfb);
+  }
+  .header img.hero {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .bar {
+    display: flex; gap: 8px; align-items: center;
+    padding: 14px 18px;
+  }
+  .title {
+    font-size: 2.2rem; font-weight: 800; color: var(--accent);
+  }
+  .spacer { flex: 1 1 auto; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 12px; border-radius: 999px;
+    color: var(--accent); border: 1px solid var(--accent);
+    background: #fff; text-decoration: none; cursor: pointer;
+    transition: transform .2s ease, background .2s ease, color .2s ease;
+    font-size: .95rem; font-weight: 700;
+  }
+  .btn:hover { transform: translateX(-6px); background: var(--accent); color: #fff; }
+  .home { margin-left: auto; }
+
+  /* 본문 */
+  .content {
+    padding: 24px 20px 36px 20px;
+  }
+  .section {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,.06);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin: 12px 0;
+  }
+  .section h2 {
+    margin: 0 0 10px 0;
+    font-size: 1.4rem;
+    color: var(--accent);
+  }
+  p { line-height: 1.7; margin: 8px 0; }
+  ul { margin: 8px 0 8px 20px; line-height: 1.7; }
+  .note { opacity: .8; }
+
+  /* 배지 영역 */
+  .badges {
+    display: flex; flex-wrap: wrap; gap: 10px 12px;
+    align-items: center;
+  }
+  .badges a { line-height: 0; border-radius: 8px; overflow: hidden; }
+  .hr {
+    height: 1px; background: rgba(0,0,0,.08); margin: 18px 0;
+  }
+
+  /* 카드 그리드 (관심사) */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 14px;
+  }
+  .card {
+    grid-column: span 12;
+    background: #fff; border: 1px solid rgba(0,0,0,.06);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 16px;
+  }
+  .card h3 { margin: 0 0 10px 0; color: var(--accent); }
+
+  /* 위젯 이미지(Top Langs) */
+  .widget {
+    width: 100%;
+    overflow: auto;
+    border-radius: var(--radius);
+    border: 1px solid rgba(0,0,0,.06);
+  }
+  .widget img { display: block; width: 100%; height: auto; }
+
+  /* TOP 버튼 */
+  .top-btn {
+    position: fixed; right: 20px; bottom: 28px;
+    width: 62px; height: 62px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-weight: 900; box-shadow: var(--shadow);
+    transition: background .2s ease, transform .2s ease;
+  }
+  .top-btn:hover { background: #1a6e6e; transform: translateY(-2px); }
+
+  @media (min-width: 720px) {
+    .content { padding: 28px 28px 42px 28px; }
+    .card.half { grid-column: span 6; }
+  }
+</style>
+</head>
+<body>
+  <div class="box">
+    <div class="page" id="top">
+      <!-- 헤더 배너 -->
+      <div class="header">
+        <div class="bar">
+          <div class="title">About.</div>
+          <span class="spacer"></span>
+          <a class="back-btn" href="index.html" aria-label="홈으로">《 HOME</a>
         </div>
+      </div>
+
+      <!-- 본문 -->
+      <div class="content">
+        <div class="section">
+            <h2>😎 수업은 없지만 학교에 가는 평범한 학부연구생입니다. 지식과 취미에 가리는 것 없는 잡식성입니다.</h2>
+        </div>
+        <div class="section">
+          <h2>😍 welcome...</h2>
+          <p>I am a mechanical engineer🛠️ based in South Korea who is interested in software development💻.</p>
+          <p>저는 한국에서 살고있는 기계공학과를 나온 엔지니어로, 소프트웨어 개발에 관심이 많은 사람입니다. :P</p>
+          <p>제 블로그에 와주셔서 감사해요! 혹시라도 저랑 같이 게임하고 싶으시면 메인페이지의 디스코드방으로 놀러오세요 😆</p>
+        </div>
+
+        <div class="section">
+          <h2>💕 I love...</h2>
+
+          <!-- Software -->
+          <div class="card">
+            <h3>software 💻</h3>
+            <div class="badges">
+              <a href="https://www.python.org/" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/python-%233776AB.svg?&style=for-the-badge&logo=python&logoColor=white" alt="Python Badge">
+              </a>
+              <a href="https://www.w3.org/TR/2011/WD-html5-20110405/" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/html-E34F26.svg?&style=for-the-badge&logo=html5&logoColor=white" alt="HTML Badge">
+              </a>
+            </div>
+          </div><br/>
+
+          <!-- Autonomous Driving -->
+          <div class="card">
+            <h3>autonomous driving 🚗</h3>
+            <div class="badges">
+              <a href="https://www.ros.org/" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/ros-%2322314E.svg?&style=for-the-badge&logo=ros&logoColor=white" alt="ROS Badge">
+              </a>
+              <a href="https://ubuntu.com/desktop" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/ubuntu-%23E95420.svg?&style=for-the-badge&logo=ubuntu&logoColor=white" alt="Ubuntu Badge">
+              </a>
+              <a href="https://www.arduino.cc/" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/arduino-%2300979D.svg?&style=for-the-badge&logo=arduino&logoColor=white" alt="Arduino Badge">
+              </a>
+              <a href="https://www.raspberrypi.com/" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/raspberry%20pi-%23C51A4A.svg?&style=for-the-badge&logo=raspberry%20pi&logoColor=white" alt="Raspberry Pi Badge">
+              </a>
+            </div>
+          </div><br/>
+
+          <!-- 3D Modeling -->
+          <div class="card">
+            <h3>3D modeling 📦</h3>
+            <div class="badges">
+              <a href="https://discover.3ds.com/ko/3dexperience-catia-industry-leading-product-design-and-engineering-software?utm_medium=cpc&utm_source=google" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/Catia%20V5/v6-%23005386.svg?&style=for-the-badge&logo=dassault%20systemes&logoColor=white" alt="CATIA Badge">
+              </a>
+              <a href="https://www.autodesk.com/kr/products/autocad/overview" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/autocad-e51050.svg?&style=for-the-badge&logo=autocad&logoColor=white" alt="AutoCAD Badge">
+              </a>
+              <a href="https://www.creality.com/kr" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/creality-black.svg?&style=for-the-badge&logo=creality&logoColor=white" alt="Creality Badge">
+              </a>
+              <a href="https://bambulab.com/ko-kr" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/3D%20Printer-00AE42.svg?&style=for-the-badge&logo=bambulab&logoColor=white" alt="Bambu Lab Badge">
+              </a>
+            </div>
+          </div><br/>
+
+          <!-- Entertaining -->
+          <div class="card">
+            <h3>Entertaining 🕹️</h3>
+            <div class="badges">
+              <a href="https://www.youtube.com/@wooyoung1026" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/youtube-%23FF0000.svg?&style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Badge">
+              </a>
+              <a href="https://discord.gg/AyeqzEy5eu" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/Discord-5865F2.svg?&style=for-the-badge&logo=discord&logoColor=white" alt="Discord Badge">
+              </a>
+              <a href="https://open.spotify.com/user/316mrxhkzs7tm2lr4dfc4c4djuxm?si=db7eb7d700e14782" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/spotify-%231ED760.svg?&style=for-the-badge&logo=spotify&logoColor=white" alt="Spotify Badge">
+              </a>
+              <a href="https://steamcommunity.com/id/wooy1026/" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/steam-%23000000.svg?&style=for-the-badge&logo=steam&logoColor=white" alt="Steam Badge">
+              </a>
+              <a href="https://www.riotgames.com/ko" target="_blank" rel="noopener">
+                <img src="https://img.shields.io/badge/riot%20games-%23D32936.svg?&style=for-the-badge&logo=riot%20games&logoColor=white" alt="Riot Games Badge">
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>😶‍🌫️ Most Used Languages in repo...</h2>
+          <div class="widget">
+            <img
+              src="https://github-readme-stats.vercel.app/api/top-langs/?username=wooy1026&layout=compact&theme=github_dark"
+              alt="Top Languages Widget" />
+          </div>
+          <p class="note">※ GitHub API 제한이나 캐시 상황에 따라 이미지가 잠시 보이지 않을 수 있어요.</p>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <a class="top-btn" href="#top" aria-label="맨 위로">TOP</a>
 </body>
 </html>

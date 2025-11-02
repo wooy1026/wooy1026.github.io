@@ -1,20 +1,197 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>신비로우엉</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/gh/naver/d2coding-font@latest/web/D2Coding.css" rel="stylesheet" type="text/css">
-</head><body>
-    <div class="container">
-        <div class="main-area">
-            <div class="content">
-                <div class="content_box">
-                    <div class="content_title">Entertainment.</div>
-                    <div class="back_btn" onclick="location.href='index.html'"> 《 홈으로 </div>
-            </div>
-        </div>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>신비로우엉 — Entertainment</title>
+  <link href="https://cdn.jsdelivr.net/gh/naver/d2coding-font@latest/web/D2Coding.css" rel="stylesheet" type="text/css">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;transition:0.2s linear}
+    body{background:#F5F5F5;font-family:'D2Coding','monospace'}
+    .box{max-width:1200px;margin:0 auto;width:100%}
+    .blog-zone{display:flex;flex-direction:row;width:100%;margin-top:16px;column-gap:16px}
+    .gallery-content{
+      position:relative;flex:1 1 auto;
+      background:#fff;color:#2D2D2D;border-radius:8px;
+      min-height:600px;padding:20px 30px;
+      box-shadow:0 4px 16px rgba(0,0,0,.15)
+    }
+    .content-title{color:#229799;font-size:4rem;font-weight:700;margin:20px 20px 0 50px}
+    .back-btn{position:absolute;right:30px;top:20px;font-size:16px;color:#229799;text-decoration:none;cursor:pointer}
+    .back-btn:hover{transform:translateX(-10px)}
+    .top-btn{position:fixed;right:20px;bottom:32px;width:70px;height:70px;border-radius:50%;
+      cursor:pointer;background:#229799;text-align:center;font-size:18px;line-height:70px;
+      color:#fff;font-weight:700;text-decoration:none}
+    .top-btn:hover{background:#1a6e6e}
+    .container{padding:15px}
+    .image-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.2rem}
+    .image-container img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:10px;
+      box-shadow:0 3px 10px rgba(0,0,0,0.15);cursor:pointer}
+    .image-container img:hover{transform:translateY(-4px);box-shadow:0 8px 18px rgba(0,0,0,0.25)}
+
+    /* === 확대 오버레이 === */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;
+      justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s ease;z-index:999;padding:24px}
+    .overlay.active{opacity:1;visibility:visible}
+    .overlay-inner{position:relative;display:flex;align-items:stretch;gap:20px;max-width:90vw;max-height:90vh}
+    .overlay img{width:350px;height:525px;object-fit:cover;border-radius:10px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.6);transform:scale(.7);transition:transform .4s ease}
+    .overlay.active img{transform:scale(1)}
+
+    .info-box{
+      background:#fff;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,0.35);
+      padding:18px;width:300px;height:180px;display:flex;flex-direction:column;justify-content:center;
+      opacity:0;transform:translateX(20px);transition:opacity .4s ease,transform .4s ease;
+      overflow:hidden;z-index:2
+    }
+    .overlay.show-info .info-box{opacity:1;transform:translateX(0)}
+    .info-title{font-weight:800;color:#229799;font-size:1.1rem;margin-bottom:6px}
+    .info-meta{font-size:.9rem;opacity:.8;margin-bottom:8px}
+    .info-desc{line-height:1.5;white-space:pre-line}
+
+    /* === 버튼 세로 배치 === */
+    .info-buttons{
+      position:absolute;
+      left:calc(350px + 20px);
+      top:calc((525px/2) + 90px + 20px);
+      display:flex;
+      flex-direction:column;      /* ✅ 세로 정렬 */
+      align-items:center;
+      gap:18px;
+      opacity:0;
+      transform:translateY(10px);
+      transition:opacity .35s ease, transform .35s ease;
+      z-index:1;
+      pointer-events:none;
+    }
+    .overlay.buttons-on .info-buttons{
+      opacity:1;
+      transform:translateY(0);
+      pointer-events:auto;
+    }
+
+    /* 공통 버튼 스타일 */
+    .circle{
+      width:56px;height:56px;border-radius:50%;
+      box-shadow:0 4px 10px rgba(0,0,0,0.3);
+      display:flex;align-items:center;justify-content:center;
+      background:#fff;overflow:hidden;cursor:pointer;
+      transition:transform .25s ease, box-shadow .25s ease;
+    }
+    .circle:hover{transform:translateY(-4px);box-shadow:0 8px 16px rgba(0,0,0,0.4)}
+    .circle img{width:100%;height:100%;object-fit:cover;display:block}
+    .home-emoji{font-size:26px;text-decoration:none;color:#111}
+
+    @media(max-width:900px){
+      .overlay-inner{flex-direction:column;align-items:center}
+      .overlay img{max-width:85vw;width:auto;height:60vh}
+      .info-box{width:90%;height:auto}
+      .info-buttons{position:static;margin-top:12px;opacity:0;transform:translateY(10px)}
+      .overlay.buttons-on .info-buttons{opacity:1;transform:translateY(0)}
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="blog-zone">
+      <div class="gallery-content">
+        <div class="content-title">Entertainment.</div>
+        <a class="back-btn" href="index.html">《 HOME</a>
+        <div class="container"><div class="image-container" id="imageContainer"></div></div>
+      </div>
     </div>
+    <a class="top-btn" href="#top">TOP</a>
+  </div>
+
+  <!-- 확대 이미지 + 정보 + 버튼 -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="overlay-inner" id="overlayInner">
+      <img id="overlayImg" src="" alt="확대 이미지">
+      <div class="info-box" id="infoBox">
+        <div class="info-title" id="infoTitle"></div>
+        <div class="info-meta"  id="infoMeta"></div>
+        <div class="info-desc"  id="infoDesc"></div>
+      </div>
+
+      <!-- 로고형 버튼들 -->
+      <div class="info-buttons" id="infoButtons">
+        <a id="musicLink" href="#" target="_blank" class="circle" aria-label="음원 바로가기">
+          <img id="musicLogoEl" src="files/logo/Spotify_icon.png" alt="음원 로고">
+        </a>
+        <a id="siteLink" href="#" target="_blank" class="circle home-emoji" aria-label="공식 사이트">✨</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ROOT = 'files/entertainment/';
+    const container  = document.getElementById('imageContainer');
+    const overlay    = document.getElementById('overlay');
+    const overlayImg = document.getElementById('overlayImg');
+    const infoBox    = document.getElementById('infoBox');
+    const infoTitle  = document.getElementById('infoTitle');
+    const infoMeta   = document.getElementById('infoMeta');
+    const infoDesc   = document.getElementById('infoDesc');
+    const musicLink  = document.getElementById('musicLink');
+    const musicLogo  = document.getElementById('musicLogoEl');
+    const siteLink   = document.getElementById('siteLink');
+
+    fetch(ROOT + 'meta.json?ts=' + Date.now(), { cache: 'no-store' })
+      .then(r => r.json())
+      .then(list => {
+        const frag = document.createDocumentFragment();
+        list.forEach(item => {
+          const img = document.createElement('img');
+          img.src = ROOT + (item.thumb || item.src);
+          img.alt = item.title || '포스터';
+          img.dataset.src   = ROOT + (item.src || item.thumb);
+          img.dataset.title = item.title || '';
+          img.dataset.meta  = (item.date ? item.date + ' · ' : '') + (item.meta || '');
+          img.dataset.desc  = item.desc || '';
+          img.dataset.music = item.music || '';
+          img.dataset.site  = item.site  || '';
+          img.dataset.musictype = (item.musicType || '').toLowerCase();
+          frag.appendChild(img);
+        });
+        container.appendChild(frag);
+      });
+
+    container.addEventListener('click', e => {
+      const t = e.target;
+      if (t.tagName !== 'IMG') return;
+
+      overlayImg.src = t.dataset.src || t.src;
+      infoTitle.textContent = t.dataset.title;
+      infoMeta.textContent = t.dataset.meta;
+      infoDesc.textContent = t.dataset.desc;
+
+      const type = t.dataset.musictype;
+      if (type === 'youtube') musicLogo.src = 'files/logo/Youtube_music_icon.webp';
+      else musicLogo.src = 'files/logo/Spotify_icon.png';
+
+      musicLink.href = t.dataset.music || '#';
+      siteLink.href  = t.dataset.site  || '#';
+
+      overlay.classList.remove('show-info','buttons-on');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      overlayImg.addEventListener('transitionend', () => {
+        overlay.classList.add('show-info');
+        infoBox.addEventListener('transitionend', () => {
+          overlay.classList.add('buttons-on');
+        }, { once: true });
+      }, { once: true });
+    });
+
+    function closeOverlay() {
+      overlay.classList.remove('buttons-on','show-info','active');
+      document.body.style.overflow = '';
+      setTimeout(() => { overlayImg.removeAttribute('src'); }, 250);
+    }
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+    window.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('active')) closeOverlay(); });
+  </script>
 </body>
 </html>

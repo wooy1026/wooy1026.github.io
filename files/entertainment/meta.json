@@ -1,0 +1,35 @@
+[
+  {
+    "src": "8번출구_포스터.webp",
+    "thumb": "8번출구_포스터.webp",
+    "title": "8번출구",
+    "date": "2025-10-22",
+    "meta": "Movie - 95min",
+    "desc": "감독 : 카와무라 겐키 | 출연 : 니노미야 카즈나리, 코마츠 나나",
+    "musicType": "youtube",
+    "music": "https://youtube.com/playlist?list=OLAK5uy_mAX_CIOug5GD8KwFXsstD1QesuUFY-Jm8&si=co4eSSgNaZ-Zclim",
+    "site": "https://www.youtube.com/watch?v=zmUXdWWED00"
+  },
+  {
+    "src": "체인소맨_레제편_포스터.jpg",
+    "thumb": "체인소맨_레제편_포스터.jpg",
+    "title": "체인소맨_레제편",
+    "date": "2025-09-24",
+    "meta": "Movie - 100min",
+    "desc": "감독 : 요시하라 타츠야",
+    "musicType": "spotify",
+    "music": "https://open.spotify.com/track/59hVbgr8rfYkDbHfr8RcGI?si=a9f7f241b79a45df",
+    "site": "https://www.youtube.com/watch?v=dOihGQCIw_w"
+  },
+  {
+    "src": "발로란트_포스터.jpg",
+    "thumb": "발로란트_포스터.jpg",
+    "title": "발로란트",
+    "date": "2020-06-02",
+    "meta": "Game - FPS",
+    "desc": "개발사 : 라이엇 게임즈",
+    "musicType": "spotify",
+    "music": "https://open.spotify.com/artist/3wrFoI9EVjWg6m8xXeWr5t?si=Fto5hqbGSlO550sC7gsyeQ",
+    "site": "https://playvalorant.com/ko-kr/"
+  }
+]

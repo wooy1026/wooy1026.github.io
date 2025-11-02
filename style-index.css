@@ -129,6 +129,7 @@ hr {
 
 .About-textbox {
     margin-bottom: 10px;
+    margin-left: 20px;
     margin-top: 10px;
     font-size: 1.2rem;
     line-height: 1.6;
@@ -190,5 +191,100 @@ hr {
 .gallery-images {
     justify-content: center;
     display: flex;
-    gap: 30px;
+    gap: 20px;
+}
+
+/* =========================
+   📱 Responsive add-ons
+   ========================= */
+
+/* 태블릿(<=1024px): 여백/폰트 살짝 축소 */
+@media (max-width: 1024px) {
+  .container { padding: 0 10px; }
+  .content-title { font-size: 1.8rem; }
+  .content-box { padding: 18px 20px; }
+  .About-textbox { font-size: 1.05rem; max-width: 100%; }
+  .github, .discord, .instagram { width: 32px; height: 32px; }
+}
+
+/* 모바일(<=720px): 1열 레이아웃 + 사이드바를 상단 카드로 */
+@media (max-width: 720px) {
+  .blog-zone {
+    flex-direction: column;
+    column-gap: 0;
+    row-gap: 12px;
+  }
+
+  /* 사이드바를 상단 정보 카드처럼 */
+  .sidebar {
+    position: static;           /* sticky 해제 */
+    width: 100%;
+    height: auto;
+    min-height: unset;
+    padding: 14px 16px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: row;        /* 사진-텍스트-아이콘 한 줄 */
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sidebar-photo {
+    width: 72px;
+    aspect-ratio: 1/1;
+    border-width: 3px;
+    flex: 0 0 auto;
+  }
+
+  .sidebar-textbox {
+    margin: 0;                  /* 상하 여백 정리 */
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .info-graphics {
+    margin-left: auto;          /* 아이콘을 오른쪽으로 */
+    gap: 10px;
+  }
+  .github, .discord, .instagram {
+    width: 24px; height: 24px;
+  }
+
+  /* 본문 카드 여백/폰트 튜닝 */
+  .index-content {
+    padding: 14px 14px 4px 14px;
+    border-radius: 12px;
+  }
+  .content-title {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+  }
+  .About-textbox {
+    margin: 8px 0 10px 0;
+    font-size: 1rem;
+  }
+  .detail-btn, .back-btn {
+    font-size: 0.98rem;
+    padding: 8px 4px;
+  }
+
+  /* 갤러리 미리보기 그리드(있을 경우) */
+  .gallery-images {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 10px;
+    justify-items: center;
+  }
+
+  /* TOP 버튼 살짝 축소 */
+  .top-btn {
+    right: 16px; bottom: 24px;
+    width: 56px; height: 56px; line-height: 56px;
+    font-size: 15px;
+  }
+}
+
+/* 아주 작은 화면(<=420px): 갤러리 1열 */
+@media (max-width: 420px) {
+  .gallery-images { grid-template-columns: 1fr; }
 }

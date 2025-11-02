@@ -1,0 +1,11 @@
+[
+{
+    "title": "ROS2 기초_1",
+    "excerpt": "ROS2 빌드, 패키지, 규칙, 인터페이스 요약",
+    "tags": ["ROS2","study"],
+    "date": "2025-11-02",
+    "href": "posts/ros2-basic-1.html",
+    "thumb": "assets/thumbs/ros2-basic-1.png",
+    "alt": "썸네일"
+}
+]

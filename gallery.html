@@ -1,37 +1,159 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>신비로우엉</title>
-    <link rel="stylesheet" href="style-gallery.css">
-    <link href="https://cdn.jsdelivr.net/gh/naver/d2coding-font@latest/web/D2Coding.css" rel="stylesheet" type="text/css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>신비로우엉 — Entertainment</title>
+  <link href="https://cdn.jsdelivr.net/gh/naver/d2coding-font@latest/web/D2Coding.css" rel="stylesheet" type="text/css">
+
+  <style>
+    /* 기본 레이아웃 */
+    *{margin:0;padding:0;box-sizing:border-box;transition:0.2s linear}
+    body{background:#F5F5F5;font-family:'D2Coding','monospace'}
+    .box{max-width:1200px;margin:0 auto;width:100%}
+    .blog-zone{display:flex;flex-direction:row;width:100%;margin-top:16px;column-gap:16px}
+    .gallery-content{
+      position:relative; /* 백버튼의 기준 */
+      flex:1 1 auto;
+      background:#fff;color:#2D2D2D;border-radius:8px;
+      min-height:600px;padding:20px 30px;
+      box-shadow:0 4px 16px rgba(0,0,0,.15)
+    }
+    .content-title{color:#229799;font-size:4rem;font-weight:700;margin:20px 20px 0 50px}
+
+    /* ✅ 컨텐츠 박스 우측 상단 고정 (외부 fixed 규칙 무력화) */
+    .back-btn{
+      position:absolute !important;  /* fixed 규칙 덮어쓰기 */
+      inset:auto 30px auto auto;     /* right:30px */
+      top:20px;
+      font-size:16px;color:#229799;text-decoration:none;cursor:pointer;
+      transition:transform .3s cubic-bezier(.4,0,.2,1)
+    }
+    .back-btn:hover{transform:translateX(-10px)}
+
+    .top-btn{position:fixed;right:20px;bottom:32px;width:70px;height:70px;border-radius:50%;cursor:pointer;background:#229799;text-align:center;font-size:18px;line-height:70px;color:#fff;font-weight:700;text-decoration:none}
+    .top-btn:hover{background:#1a6e6e}
+    .container{padding:15px}
+
+    /* 썸네일 그리드 */
+    .image-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.4rem}
+    .image-container img{width:100%;height:auto;display:block;border-radius:5px;cursor:pointer;transition:transform .3s ease}
+    .image-container img:hover{transform:scale(1.05)}
+
+    /* 라이트박스 */
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:1000;padding:24px}
+    .lightbox.open{display:flex}
+    .lb-card{
+      background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);
+      display:grid;grid-template-columns:minmax(300px,1fr) 360px;max-width:1100px;width:92vw;height:82vh;overflow:hidden;
+      transform:scale(.92);opacity:0;transition:transform 400ms ease,opacity 400ms ease
+    }
+    .lightbox.open .lb-card{transform:none;opacity:1}
+    .lb-img-wrap{position:relative;width:100%;height:100%;overflow:hidden}
+    .lb-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+    .lb-side{padding:18px;display:flex;flex-direction:column;gap:10px;border-left:1px solid rgba(0,0,0,.08);overflow:auto}
+    .lb-title{font-weight:800;color:#229799}
+    .lb-meta{font-size:.9rem;opacity:.75}
+    .lb-desc{line-height:1.65;white-space:pre-line}
+    .lb-close{position:absolute;top:16px;right:24px;width:40px;height:40px;border-radius:50%;background:rgba(0, 0, 0, 0.48);color:#fff;display:grid;place-items:center;cursor:pointer;font-size:20px}
+    .lb-close:hover{background:rgba(0,0,0,.6)}
+    @media (max-width:900px){
+      .lb-card{grid-template-columns:1fr;width:95vw;height:auto;max-height:90vh}
+      .lb-side{border-left:none;border-top:1px solid rgba(0,0,0,.08)}
+    }
+  </style>
 </head>
 
 <body>
-    <div class="box">
-        <div class="blog-zone">
-            <div class="gallery-content">
-                <div class="content-title">Gallery.</div>
-                <div class="back-btn" onclick="location.href='index.html'"> 《 HOME </div>
-                <div class="container">
-                    <div class="image-container">
-                        <img src="files/gallery/1.jpg" alt=""/>
-                        <img src="files/gallery/2.jpg" alt=""/>
-                        <img src="files/gallery/3.jpg" alt=""/>
-                        <img src="files/gallery/4.jpg" alt=""/>
-                        <img src="files/gallery/5.jpg" alt=""/>
-                        <img src="files/gallery/6.jpg" alt=""/>
-                        <img src="files/gallery/7.jpg" alt=""/>
-                        <img src="files/gallery/8.jpg" alt=""/>
-                        <img src="files/gallery/9.jpg" alt=""/>
-                        <img src="files/gallery/10.jpg" alt=""/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <a class="top-btn" href ="#top">TOP</a>
-    </div>
-</body>
+  <div class="box">
+    <div class="blog-zone">
+      <div class="gallery-content">
+        <div class="content-title">Gallery.</div>
+        <a class="back-btn" href="index.html">《 HOME</a>
 
+        <div class="container">
+          <div class="image-container" id="imageContainer"></div>
+        </div>
+      </div>
+    </div>
+    <a class="top-btn" href="#top">TOP</a>
+  </div>
+
+  <!-- 라이트박스 -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lb-card" role="dialog" aria-modal="true" aria-labelledby="lbTitle" aria-describedby="lbDesc">
+      <div class="lb-img-wrap"><img class="lb-img" id="lbImg" alt=""></div>
+      <aside class="lb-side">
+        <div class="lb-title" id="lbTitle"></div>
+        <div class="lb-meta"  id="lbMeta"></div>
+        <div class="lb-desc"  id="lbDesc"></div>
+      </aside>
+      <button class="lb-close" id="lbClose" aria-label="닫기">✕</button>
+    </div>
+  </div>
+
+  <script>
+    const container = document.getElementById('imageContainer');
+
+    // 라이트박스 요소
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lbImg');
+    const lbTitle = document.getElementById('lbTitle');
+    const lbMeta  = document.getElementById('lbMeta');
+    const lbDesc  = document.getElementById('lbDesc');
+    const lbClose = document.getElementById('lbClose');
+
+    // 메타 JSON 불러와서 썸네일 렌더링
+    fetch('files/gallery/meta.json?ts=' + Date.now(), { cache: 'no-store' })
+      .then(r => r.json())
+      .then(list => {
+        if (!Array.isArray(list)) throw new Error('meta.json 형식 오류');
+        const frag = document.createDocumentFragment();
+        list.forEach(item => {
+          const thumbSrc = item.thumb || item.src;
+          const img = document.createElement('img');
+          img.src = thumbSrc;
+          img.alt = item.title || '이미지';
+          img.loading = 'lazy';
+          img.dataset.src   = item.src || thumbSrc;
+          img.dataset.title = item.title || '';
+          const datePart = item.date ? (item.date + (item.meta ? ' · ' : '')) : '';
+          img.dataset.meta  = datePart + (item.meta || '');
+          img.dataset.desc  = item.desc || '';
+          frag.appendChild(img);
+        });
+        container.appendChild(frag);
+      })
+      .catch(err => {
+        console.error('meta.json 로드 실패:', err);
+        container.innerHTML = '<p style="opacity:.7">이미지 목록을 불러오지 못했습니다.</p>';
+      });
+
+    // 썸네일 클릭 → 라이트박스 열기
+    container.addEventListener('click', (e) => {
+      const t = e.target;
+      if (t && t.tagName === 'IMG') {
+        lbImg.src = t.dataset.src || t.src;
+        lbImg.alt = t.alt || '이미지';
+        lbTitle.textContent = t.dataset.title || '';
+        lbMeta.textContent  = t.dataset.meta  || '';
+        lbDesc.textContent  = t.dataset.desc  || '';
+        lb.classList.add('open');
+        lb.setAttribute('aria-hidden','false');
+        document.body.style.overflow = 'hidden';
+      }
+    });
+
+    // 라이트박스 닫기
+    function closeLB(){
+      lb.classList.remove('open');
+      lb.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+      setTimeout(()=>{ lbImg.removeAttribute('src'); }, 200);
+    }
+    lbClose.addEventListener('click', closeLB);
+    lb.addEventListener('click', (e)=>{ if(e.target === lb) closeLB(); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && lb.classList.contains('open')) closeLB(); });
+  </script>
+</body>
 </html>

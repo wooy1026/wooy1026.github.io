@@ -1,20 +1,282 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>신비로우엉</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/gh/naver/d2coding-font@latest/web/D2Coding.css" rel="stylesheet" type="text/css">
-</head><body>
-    <div class="container">
-        <div class="main-area">
-            <div class="content">
-                <div class="content_box">
-                    <div class="content_title">Blog.</div>
-                    <div class="back_btn" onclick="location.href='index.html'"> 《 홈으로 </div>
-            </div>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>신비로우엉 — Blog</title>
+
+<!-- 메인(index)과 동일 폰트/스타일 재사용 -->
+<link rel="stylesheet" href="style-index.css" />
+<link href="https://cdn.jsdelivr.net/gh/naver/d2coding-font@latest/web/D2Coding.css" rel="stylesheet" type="text/css" />
+
+<style>
+  /* ===== 레이아웃/타이포 ===== */
+.index-content{ width:100%; }
+.top-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.back-btn{ cursor:pointer; }
+
+.toolbar{ display:flex; gap:8px; align-items:center; margin:10px 0 16px; flex-wrap:wrap; }
+.toolbar input, .toolbar select{ padding:8px 10px; border:1px solid rgba(0,0,0,.12); border-radius:8px; }
+
+.post-list{ display:grid; grid-template-columns:1fr; gap:12px; }
+
+.post-item{
+    border:1px solid rgba(0,0,0,0.06);
+    border-radius:10px;
+    background:#fff;
+    padding:14px;
+    display:grid;
+    grid-template-columns:96px 1fr;
+    gap:12px;
+
+    /* ==== 페이드 인 초기 상태 ==== */
+    opacity:0;
+    transform: translateY(8px);
+    will-change: opacity, transform;
+}
+  /* 뷰포트에 들어오면 노출 */
+.post-item.reveal{
+    opacity:1;
+    transform:none;
+    transition: opacity .45s ease, transform .45s ease;
+}
+
+.post-thumb{ width:96px; aspect-ratio: 1/1; height:auto; object-fit:cover; border-radius:8px; background:#eee; }
+.post-title{ font-weight:700; margin:0 0 4px; }
+.post-excerpt{ margin:0; opacity:.85; line-height:1.6; }
+.post-meta{ margin-top:8px; font-size:.9em; opacity:.75; display:flex; gap:8px; flex-wrap:wrap; }
+
+  /* 무한스크롤 상태/센티넬 */
+.infinite-status { text-align:center; padding:16px 8px; color:rgba(0,0,0,.55); font-size:.95em; }
+.loader-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:currentColor; margin:0 2px; animation:blink 1.2s infinite alternate; }
+.loader-dot:nth-child(2){ animation-delay:.2s; }
+.loader-dot:nth-child(3){ animation-delay:.4s; }
+@keyframes blink { from{ opacity:.2; transform:translateY(0); } to{ opacity:1; transform:translateY(-3px); } }
+
+@media (max-width:720px){
+.post-item{ grid-template-columns:1fr; }
+.post-thumb{ width:100%; aspect-ratio: 1/1; height:auto; }
+}
+
+  /* 사용자 접근성: 모션 감소 선호 시 */
+@media (prefers-reduced-motion: reduce) {
+.post-item, .post-item.reveal {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="blog-zone">
+    <div class="index-content">
+    <div class="content-box">
+        <div class="top-row">
+        <div class="content-title">Blog.</div>
+        <a class="detail-btn back-btn" href="index.html">《 HOME</a>
         </div>
+
+        <!-- 검색/태그 필터 -->
+        <div class="toolbar">
+        <input id="q" type="search" placeholder="검색(제목/요약/태그)..." aria-label="검색">
+        <select id="tag" aria-label="태그 필터">
+            <option value="">전체 태그</option>
+        </select>
+        </div>
+
+        <!-- 목록 -->
+        <div class="post-list" id="postList"></div>
+
+        <!-- 상태 / 센티넬 -->
+        <div id="infiniteStatus" class="infinite-status" aria-live="polite">
+        더 불러오는 중 <span class="loader-dot"></span><span class="loader-dot"></span><span class="loader-dot"></span>
+        </div>
+        <div id="sentinel" style="height:1px;"></div>
     </div>
+    </div>
+</div>
+<a class="top-btn" href="#top">TOP</a>
+</div>
+
+<script>
+/* =========================
+    데이터/상태
+==========================*/
+  let postsData = [];     // 전체 데이터
+  let filtered = null;    // 필터 적용 데이터
+  const PAGE_SIZE = 10;   // 한 번에 추가할 카드 수
+  let cursor = 0;         // 다음 로드 시작 인덱스
+
+  let listObserver = null;   // 무한스크롤용 옵저버
+  let revealObserver = null; // 카드 페이드인용 옵저버
+
+  // DOM
+const postList  = document.getElementById('postList');
+const sentinel  = document.getElementById('sentinel');
+const statusBox = document.getElementById('infiniteStatus');
+const q   = document.getElementById('q');
+const tag = document.getElementById('tag');
+
+const norm = (s)=> (s||'').toLowerCase();
+
+/* =========================
+    유틸/빌더
+==========================*/
+function buildTagOptions(items){
+    const set = new Set();
+    items.forEach(p => (p.tags||[]).forEach(t => set.add(t)));
+    const tags = Array.from(set).sort((a,b)=>a.localeCompare(b,'ko'));
+    tag.innerHTML = '<option value="">전체 태그</option>' + tags.map(t=>`<option value="${t}">${t}</option>`).join('');
+}
+
+function cardHTML(post){
+    const tagsHTML = (post.tags||[]).map(t => `<span>${t}</span>`).join('');
+    const thumb = post.thumb || '';
+    const alt   = post.alt || '게시글 이미지';
+    const date  = post.date || '';
+    const href  = post.href || '#';
+    return `
+    <article class="post-item"
+            data-tags="${(post.tags||[]).join(' ')}"
+            data-title="${post.title}"
+            data-excerpt="${post.excerpt}">
+        <img class="post-thumb" loading="lazy" src="${thumb}" alt="${alt}" />
+        <div>
+        <h3 class="post-title">${post.title}</h3>
+        <p class="post-excerpt">${post.excerpt}</p>
+        <div class="post-meta">
+            ${tagsHTML}
+            <span>${date}</span>
+            <span style="margin-left:auto"></span>
+            <a class="detail-btn" href="${href}" aria-label="${post.title} 읽기">READ 》</a>
+        </div>
+        </div>
+    </article>`;
+}
+
+/* =========================
+    필터/정렬
+==========================*/
+function applyFilter(){
+    const qv = norm(q.value);
+    const tv = tag.value; // 대소문자 유지(옵션 표시 그대로)
+
+    filtered = postsData.filter(p => {
+    const inTitle   = norm(p.title).includes(qv);
+    const inExcerpt = norm(p.excerpt).includes(qv);
+    const inTagsStr = (p.tags||[]).map(norm).join(' ');
+    const matchQ = !qv || inTitle || inExcerpt || inTagsStr.includes(qv);
+    const matchT = !tv || (p.tags||[]).includes(tv);
+    return matchQ && matchT;
+    });
+
+    // 날짜 최신순 정렬(문자 YYYY-MM-DD 가정)
+    filtered.sort((a,b)=> String(b.date||'').localeCompare(String(a.date||'')));
+
+    // 초기화 후 첫 페이지 렌더
+    cursor = 0;
+    postList.innerHTML = '';
+    statusBox.textContent = '더 불러오는 중...';
+
+    // 옵저버 재설정
+    disconnectListObserver();
+    ensureRevealObserver();
+    ensureListObserver();
+
+    renderNext();
+}
+
+/* =========================
+    렌더링
+==========================*/
+function renderNext(){
+    const src = filtered ?? postsData;
+    if(!src || src.length === 0){
+    statusBox.textContent = '게시글이 없습니다.';
+    disconnectListObserver();
+    return;
+    }
+    const next = src.slice(cursor, cursor + PAGE_SIZE);
+    if(next.length === 0){
+    statusBox.textContent = '더 이상 불러올 글이 없습니다.';
+    disconnectListObserver();
+    return;
+    }
+
+    const frag = document.createDocumentFragment();
+
+    next.forEach((p, i) => {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = cardHTML(p);
+    const cardEl = wrap.firstElementChild;
+
+      // 페이드 인: 한 배치 내에서 가벼운 스태거(0, 50, 100ms ...)
+      cardEl.style.transitionDelay = `${(i % PAGE_SIZE) * 50}ms`;
+    revealObserver.observe(cardEl);
+
+    frag.appendChild(cardEl);
+    });
+
+    postList.appendChild(frag);
+    cursor += next.length;
+    statusBox.textContent = '더 불러오는 중...';
+}
+
+/* =========================
+    옵저버
+==========================*/
+function ensureListObserver(){
+    if(listObserver) return;
+    listObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          // 약간의 지연으로 UX 부드럽게
+        setTimeout(renderNext, 120);
+        }
+    });
+    }, { rootMargin: '600px 0px 600px 0px' });
+    listObserver.observe(sentinel);
+}
+function disconnectListObserver(){
+if(listObserver){
+    listObserver.disconnect();
+    listObserver = null;
+    }
+}
+
+function ensureRevealObserver(){
+    if(revealObserver) return;
+    revealObserver = new IntersectionObserver((entries)=>{
+    entries.forEach((entry)=>{
+        if(entry.isIntersecting){
+        entry.target.classList.add('reveal');
+        revealObserver.unobserve(entry.target);
+        }
+    });
+    }, { threshold: 0.12 });
+}
+
+/* =========================
+    이벤트/초기 로드
+==========================*/
+q.addEventListener('input', applyFilter);
+tag.addEventListener('change', applyFilter);
+
+  // JSON 로드 (posts/post.json 경로에 맞춤)
+fetch('posts.json?ts=' + Date.now(), { cache: 'no-store' })
+    .then(r => r.json())
+    .then(data => {
+    postsData = Array.isArray(data) ? data : [];
+    buildTagOptions(postsData);
+    applyFilter();
+    })
+    .catch(err => {
+    console.error('[posts.json fetch error]', err);
+    statusBox.textContent = '게시글을 불러오지 못했습니다.';
+    disconnectListObserver();
+    });
+</script>
 </body>
 </html>

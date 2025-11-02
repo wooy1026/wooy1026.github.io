@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ROS2 빌드·패키지·규칙·인터페이스 요약 — 신비로우엉</title>
+<link rel="stylesheet" href="../style-index.css" />
+<link href="https://cdn.jsdelivr.net/gh/naver/d2coding-font@latest/web/D2Coding.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<!--
+meta:
+  title: "ROS2 빌드·패키지·규칙·인터페이스 요약"
+  excerpt: "ROS2 빌드 시스템(colcon/ament), 패키지 파일 구조, 스타일 가이드, 파이썬 예제, 인터페이스(msg/srv/action) 정리"
+  tags: ["ROS2","Build","Python","Interface"]
+  date: "2025-11-02"
+  thumb: "../essets/thumbs/ros2-build.jpg"
+  alt: "ROS2 빌드 시스템 개요 썸네일"
+-->
+
+<div class="container">
+  <div class="blog-zone">
+    <div class="index-content">
+      <div class="content-box">
+        <div class="top-row" style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+          <div class="content-title">Article.</div>
+          <a class="detail-btn back-btn" href="../blog.html">《 목록으로</a>
+        </div>
+
+        <h1>ROS2 빌드·패키지·규칙·인터페이스 요약</h1>
+        <p class="post-meta">ROS2 · Build · Python · Interface · 2025-11-02</p>
+        <hr>
+
+        <h2 id="sec1">1. ROS2의 빌드 시스템</h2>
+
+        <h3>바이너리 설치 위치</h3>
+        <ul>
+          <li>/opt/ros/humble</li>
+          <li><code>ros2 run</code> 또는 <code>ros2 launch</code>로 패키지 내 노드를 실행</li>
+          <li>설치 예: <code>sudo apt install ros-humble-teleop-twist-joy</code></li>
+        </ul>
+
+        <h3>빌드 시스템/툴</h3>
+        <ul>
+          <li>빌드 <em>시스템</em>은 단일 패키지 대상, 빌드 <em>툴</em>은 전체 패키지 대상</li>
+          <li>ROS 2는 빌드 툴로 <strong>colcon</strong>, 빌드 시스템으로 <strong>ament</strong> 사용</li>
+        </ul>
+
+        <h3>패키지 생성 명령어</h3>
+<pre><code class="language-bash">$ ros2 pkg create [pkg_name] --build-type [build_type] --dependencies [depend_pkg1] [depend_pkg2]
+</code></pre>
+        <ul>
+          <li><code>build_type</code>은 C++이면 <code>ament_cmake</code>, Python이면 <code>ament_python</code></li>
+          <li>단, GUI(rqt_plugin 계열)면 Python으로 작성해도 <code>ament_cmake</code> 권장</li>
+          <li>주요 의존성: <code>rclcpp</code> / <code>rclpy</code> / <code>std_msgs</code></li>
+        </ul>
+
+        <h3>패키지 빌드</h3>
+        <ul>
+          <li><code>colcon build</code>로 전체 빌드, 옵션 병행 사용이 일반적</li>
+          <li>특정 패키지만: <code>--packages-select</code> 또는 <code>--packages-up-to</code></li>
+          <li>심볼릭 링크 설치: <code>--symlink-install</code> (개발 편의상 강력 추천)</li>
+        </ul>
+
+        <h3>패키지 삭제/정리</h3>
+        <ul>
+          <li><code>rm -rf src/[pkg]</code> 삭제 후, <code>build</code>/<code>install</code>/<code>log</code> 폴더도 정리하고 재빌드</li>
+        </ul>
+
+        <h3>vcstool</h3>
+        <ul>
+          <li><code>.repos</code> 파일로 여러 리포지터리 일괄 관리</li>
+          <li><code>vcs import src &lt; [reponame].repos</code></li>
+        </ul>
+
+        <h3>etc.</h3>
+        <ul>
+          <li><strong>rosdep</strong>: 의존성 관리</li>
+          <li><strong>bloom</strong>: 바이너리 패키지 배포 도구</li>
+        </ul>
+
+        <h2 id="sec2">2. ROS2의 패키지 파일</h2>
+
+        <h3>package.xml (패키지 설정)</h3>
+        <p>※ 문서 235p 참고(서술 예정)</p>
+
+        <h3>CMakeLists.txt (빌드 설정)</h3>
+        <p>※ 문서 236p 참고(서술 예정)</p>
+
+        <h3>setup.py (파이썬 패키지 설정)</h3>
+        <ul>
+          <li>파이썬 패키지에서 배포/엔트리포인트 설정 담당</li>
+          <li>C++ 패키지의 <code>package.xml</code>/<code>CMakeLists.txt</code> 역할을 일부 대체</li>
+          <li>※ 문서 240p 참고(서술 예정)</li>
+        </ul>
+
+        <h3>setup.cfg (파이썬 환경설정)</h3>
+        <p><code>[develop]</code>, <code>[install]</code> 섹션으로 스크립트 저장위치 등 옵션 지정</p>
+
+        <h3>plugin.xml (RQt 플러그인)</h3>
+        <p>rqt 플러그인 패키지일 때 필수 메타. 속성은 공식 문서 참고</p>
+        <p><a class="detail-btn" href="https://wiki.ros.org/rqt/Tutorials/Create%20your%20new%20rqt%20plugin#Attributes_of_library_element_in_plugin.xml" target="_blank" rel="noopener">rqt plugin.xml 문서 》</a></p>
+
+        <h3>기타</h3>
+        <ul>
+          <li><code>CHANGELOG.rst</code> / <code>LICENSE</code> / <code>README.md</code></li>
+        </ul>
+
+        <h2 id="sec3">3. ROS2 프로그래밍 규칙(코드)</h2>
+
+        <h3>코드 스타일 가이드</h3>
+        <ul>
+          <li>네이밍 규칙: <code>snake_case</code>, <code>CamelCased</code>, <code>ALL_CAPITALS</code></li>
+          <li>파일/변수/함수: <code>snake_case</code> · 타입/클래스: <code>CamelCased</code></li>
+          <li>인터페이스 파일(msg/srv/action) 파일명: <code>CamelCased</code></li>
+          <li><a class="detail-btn" href="https://blog.naver.com/ege1001/220466932974" target="_blank" rel="noopener">코드 스타일 설명 블로그 》</a></li>
+        </ul>
+
+        <h3>Python Style 요약</h3>
+        <ol>
+          <li>Python 3 사용</li>
+          <li>라인 길이 최대 100자</li>
+          <li>네이밍: CamelCased / snake_case / ALL_CAPITALS</li>
+          <li>들여쓰기: space 4개</li>
+        </ol>
+<pre><code class="language-python"># 들여쓰기 예
+foo = function_name(var_one, var_two, var_three)
+
+def long_long_long_long_function_name(
+        var_one,
+        var_two,
+        var_three):
+    print(var_three)
+
+# 괄호/리터럴 예
+lst = [1, 2, 3, 4]
+dictionary = {'age': 30, 'name': 'honggildong'}
+tup = (1, 2, 3, 4)
+</code></pre>
+        <ul>
+          <li>문서 주석: <code>""" ... """</code> (PEP 257)</li>
+          <li>구현 주석: <code>#</code></li>
+          <li>문자열 따옴표: 프로젝트 규칙에 맞춰 일관성 유지(여기서는 작은따옴표 원칙)</li>
+        </ul>
+
+        <h2 id="sec4">4. ROS2 프로그래밍(파이썬)</h2>
+
+        <h3>초반 세팅</h3>
+        <ul>
+          <li>패키지: <code>python_example_pkg</code></li>
+          <li><code>package.xml</code> / <code>setup.py</code> 설정</li>
+        </ul>
+
+        <h4>package.xml</h4>
+<pre><code class="language-xml">&lt;?xml version="1.0"?&gt;
+&lt;?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?&gt;
+&lt;package format="3"&gt;
+  &lt;name&gt;python_example_pkg&lt;/name&gt;
+  &lt;version&gt;0.0.0&lt;/version&gt;
+  &lt;description&gt;TODO: Package description&lt;/description&gt;
+  &lt;maintainer email="woo@todo.todo"&gt;woo&lt;/maintainer&gt;
+  &lt;license&gt;TODO: License declaration&lt;/license&gt;
+
+  &lt;depend&gt;rclpy&lt;/depend&gt;
+  &lt;depend&gt;std_msgs&lt;/depend&gt;
+
+  &lt;test_depend&gt;ament_copyright&lt;/test_depend&gt;
+  &lt;test_depend&gt;ament_flake8&lt;/test_depend&gt;
+  &lt;test_depend&gt;ament_pep257&lt;/test_depend&gt;
+  &lt;test_depend&gt;python3-pytest&lt;/test_depend&gt;
+
+  &lt;export&gt;
+    &lt;build_type&gt;ament_python&lt;/build_type&gt;
+  &lt;/export&gt;
+&lt;/package&gt;
+</code></pre>
+
+        <h4>setup.py</h4>
+<pre><code class="language-python">from setuptools import find_packages, setup
+
+package_name = 'python_example_pkg'
+
+setup(
+    name=package_name,
+    version='0.0.0',
+    packages=find_packages(exclude=['test']),
+    data_files=[
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        ('share/' + package_name, ['package.xml']),
+    ],
+    install_requires=['setuptools'],
+    zip_safe=True,
+    maintainer='woo',
+    maintainer_email='woo@todo.todo',
+    description='TODO: Package description',
+    license='TODO: License declaration',
+    tests_require=['pytest'],
+    entry_points={
+        'console_scripts': [
+            'helloworld_publisher = python_example_pkg.helloworld_publisher:main',
+            'helloworld_subscriber = python_example_pkg.helloworld_subscriber:main'
+        ],
+    },
+)
+</code></pre>
+
+        <h4>setup.cfg</h4>
+        <p>패키지 이름을 정확히 지정. 빌드 후 <code>install/[pkg]/lib/[pkg]</code>에 실행 파일 생성.</p>
+
+        <h3>퍼블리셔/서브스크라이버 노드</h3>
+        <p><code>helloworld_publisher.py</code>, <code>helloworld_subscriber.py</code>에 구현(주석 참고)</p>
+
+        <h3>빌드</h3>
+        <p><code>colcon build</code>. 특정 패키지 지정은 위 빌드 시스템 항목 참고.</p>
+
+        <h2 id="sec5">5. ROS2 Tips</h2>
+
+        <h3>설정 스크립트</h3>
+<pre><code class="language-bash">nano ~/.bashrc
+# 최하단에 추가 (예시)
+source ~/[workspace_name]/install/local_setup.bash
+</code></pre>
+
+        <h3>setup.bash vs local_setup.bash</h3>
+        <h4>underlay / overlay</h4>
+        <ul>
+          <li>바이너리 설치 워크스페이스: underlay</li>
+          <li>개발용 로컬 워크스페이스: overlay</li>
+        </ul>
+        <h4>사용 원칙</h4>
+        <ul>
+          <li>일반적으로 <code>setup.bash</code>가 다른 작업공간의 <code>local_setup.bash</code>를 포함</li>
+          <li><code>~/.bashrc</code>에는 <code>source /opt/ros/humble/setup.bash</code> 먼저</li>
+        </ul>
+
+        <h3>ROS_DOMAIN_ID</h3>
+<pre><code class="language-bash">export ROS_DOMAIN_ID=7
+</code></pre>
+
+        <h3>ROS2 Namespace</h3>
+<pre><code class="language-bash">ros2 run turtlesim turtlesim_node --ros-args -r __ns:=/robot1
+ros2 run turtlesim turtlesim_node --ros-args -r __ns:=/robot2
+</code></pre>
+        <p><code>--ros-args</code>는 ROS 관련 인자, <code>-r</code>은 이름 재정의.</p>
+
+        <h3>colcon / vcstool 자동완성</h3>
+        <p>※ 문서 287p 참고(서술 예정)</p>
+
+        <h2 id="sec6">6. 토픽·서비스·액션 인터페이스</h2>
+        <p>인터페이스 전용 패키지를 분리해 관리 권장(<code>ament_cmake</code> 빌드 타입). <code>action</code>, <code>msg</code>, <code>srv</code> 폴더 생성 후 아래 파일 작성.</p>
+
+        <h4>ArithmeticArgument.msg</h4>
+<pre><code class="language-none"># Messages
+builtin_interfaces/Time stamp
+float32 argument_a
+float32 argument_b
+</code></pre>
+
+        <h4>ArithmeticOperator.srv</h4>
+<pre><code class="language-none"># Constants
+int8 PLUS = 1
+int8 MINUS = 2
+int8 MULTYPLY = 3
+int8 DIVISION = 4
+
+# Request
+int8 arithmetic_operator
+---
+# Response
+float32 arithmetic_result
+</code></pre>
+
+        <h4>ArithmeticChecker.action</h4>
+<pre><code class="language-none"># Goal
+float32 goal_sum
+---
+# Result
+string[] all_formula
+float32 total_sum
+---
+# Feedback
+string[] formula
+</code></pre>
+
+        <h4>package.xml</h4>
+<pre><code class="language-xml">&lt;?xml version="1.0"?&gt;
+&lt;?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?&gt;
+&lt;package format="3"&gt;
+  &lt;name&gt;interface_pkg&lt;/name&gt;
+  &lt;version&gt;0.0.0&lt;/version&gt;
+  &lt;description&gt;ros2_interface_pkg for 2025_mando_ws&lt;/description&gt;
+  &lt;maintainer email="wooy1026@naver.com"&gt;woo&lt;/maintainer&gt;
+  &lt;license&gt;Apache 2.0&lt;/license&gt;
+
+  &lt;buildtool_depend&gt;ament_cmake&lt;/buildtool_depend&gt;
+  &lt;buildtool_depend&gt;rosidl_default_generators&lt;/buildtool_depend&gt;
+
+  &lt;exec_depend&gt;builtin_interfaces&lt;/exec_depend&gt;
+  &lt;exec_depend&gt;rosidl_default_runtime&lt;/exec_depend&gt;
+
+  &lt;test_depend&gt;ament_lint_auto&lt;/test_depend&gt;
+  &lt;test_depend&gt;ament_lint_common&lt;/test_depend&gt;
+
+  &lt;member_of_group&gt;rosidl_interface_packages&lt;/member_of_group&gt;
+  &lt;export&gt;
+    &lt;build_type&gt;ament_cmake&lt;/build_type&gt;
+  &lt;/export&gt;
+&lt;/package&gt;
+</code></pre>
+
+        <h4>CMakeLists.txt</h4>
+<pre><code class="language-cmake">cmake_minimum_required(VERSION 3.8)
+project(interface_pkg)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(builtin_interfaces REQUIRED)
+find_package(rosidl_default_runtime REQUIRED)
+
+set(msg_files
+  "msg/ArithmeticArgument.msg"
+)
+
+set(srv_files
+  "srv/ArithmeticOperator.srv"
+)
+
+set(action_files
+  "action/ArithmeticChecker.action"
+)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
+  ${srv_files}
+  ${action_files}
+  DEPENDENCIES builtin_interfaces
+)
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_package()
+</code></pre>
+
+        <h4>빌드</h4>
+        <p>빌드 후 <code>install</code> 폴더에 각 언어 바인딩(<code>.hpp</code>, <code>.py</code> 등)이 생성됨.</p>
+
+        <h2>ROS2 패키지 설계(파이썬)</h2>
+        <h3>패키지 설계</h3>
+        <p>프로세스를 목적별로 나눈 노드 단위로 작성하고, 노드 간 통신(토픽/서비스/액션)을 고려하여 설계.</p>
+
+        <h3>노드 작성</h3>
+        <p>구현은 별도 파일로 분리하고, 실행 엔트리는 <code>setup.py</code>의 <code>console_scripts</code>로 노출.</p>
+
+        <h2>오늘은 여기까지</h2>
+
+      </div>
+    </div>
+  </div>
+  <a class="top-btn" href="#top">TOP</a>
+</div>
+</body>
+</html>
