@@ -24,21 +24,42 @@
       cursor:pointer;background:#229799;text-align:center;font-size:18px;line-height:70px;
       color:#fff;font-weight:700;text-decoration:none}
     .top-btn:hover{background:#1a6e6e}
+
     .container{padding:15px}
-    .image-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.2rem}
-    .image-container img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:10px;
-      box-shadow:0 3px 10px rgba(0,0,0,0.15);cursor:pointer}
+    .image-container{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+      gap:1.2rem;
+    }
+    .image-container img{
+      width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:10px;
+      box-shadow:0 3px 10px rgba(0,0,0,0.15);cursor:pointer
+    }
     .image-container img:hover{transform:translateY(-4px);box-shadow:0 8px 18px rgba(0,0,0,0.25)}
 
     /* === 확대 오버레이 === */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;
-      justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s ease;z-index:999;padding:24px}
+    .overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,0.7);
+      display:flex;align-items:center;justify-content:center;
+      opacity:0;visibility:hidden;transition:opacity .3s ease;z-index:999;padding:24px
+    }
     .overlay.active{opacity:1;visibility:visible}
-    .overlay-inner{position:relative;display:flex;align-items:stretch;gap:20px;max-width:90vw;max-height:90vh}
-    .overlay img{width:350px;height:525px;object-fit:cover;border-radius:10px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.6);transform:scale(.7);transition:transform .4s ease}
+
+    .overlay-inner{
+      position:relative;display:flex;align-items:center;gap:20px;
+      max-width:min(90vw, 1000px);max-height:90vh
+    }
+
+    /* 확대 포스터: PC기준 고정 350x525, 작은 화면은 자동 축소 */
+    .overlay img{
+      width:350px;height:525px;max-width:calc(90vw - 360px); /* info영역 고려 */
+      object-fit:cover;border-radius:10px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.6);
+      transform:scale(.7);transition:transform .4s ease
+    }
     .overlay.active img{transform:scale(1)}
 
+    /* 정보박스 */
     .info-box{
       background:#fff;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,0.35);
       padding:18px;width:300px;height:180px;display:flex;flex-direction:column;justify-content:center;
@@ -50,45 +71,65 @@
     .info-meta{font-size:.9rem;opacity:.8;margin-bottom:8px}
     .info-desc{line-height:1.5;white-space:pre-line}
 
-    /* === 버튼 세로 배치 === */
+    /* 버튼: PC에서는 포스터 오른쪽, 정보박스 아래 라인에 세로 배치(겹침 방지) */
     .info-buttons{
       position:absolute;
-      left:calc(350px + 20px);
-      top:calc((525px/2) + 90px + 20px);
-      display:flex;
-      flex-direction:column;      /* ✅ 세로 정렬 */
-      align-items:center;
-      gap:18px;
-      opacity:0;
-      transform:translateY(10px);
+      left:calc(350px + 20px);          /* 포스터(350) + 갭(20) */
+      top:calc(525px/2 + 90px + 20px);  /* 포스터중앙(262.5)+인포박스 절반(90)+갭(20) */
+      display:flex;flex-direction:column;align-items:center;gap:18px;
+      opacity:0;transform:translateY(10px);
       transition:opacity .35s ease, transform .35s ease;
-      z-index:1;
-      pointer-events:none;
+      z-index:1;pointer-events:none
     }
-    .overlay.buttons-on .info-buttons{
-      opacity:1;
-      transform:translateY(0);
-      pointer-events:auto;
-    }
+    .overlay.buttons-on .info-buttons{opacity:1;transform:translateY(0);pointer-events:auto}
 
-    /* 공통 버튼 스타일 */
     .circle{
       width:56px;height:56px;border-radius:50%;
       box-shadow:0 4px 10px rgba(0,0,0,0.3);
       display:flex;align-items:center;justify-content:center;
       background:#fff;overflow:hidden;cursor:pointer;
-      transition:transform .25s ease, box-shadow .25s ease;
+      transition:transform .25s ease, box-shadow .25s ease
     }
     .circle:hover{transform:translateY(-4px);box-shadow:0 8px 16px rgba(0,0,0,0.4)}
     .circle img{width:100%;height:100%;object-fit:cover;display:block}
     .home-emoji{font-size:26px;text-decoration:none;color:#111}
 
-    @media(max-width:900px){
-      .overlay-inner{flex-direction:column;align-items:center}
-      .overlay img{max-width:85vw;width:auto;height:60vh}
-      .info-box{width:90%;height:auto}
-      .info-buttons{position:static;margin-top:12px;opacity:0;transform:translateY(10px)}
+    /* === 반응형 === */
+    @media (max-width: 1024px){
+      .content-title{font-size:3.25rem;margin:16px 16px 0 32px}
+      .overlay img{max-width:60vw;height:auto;aspect-ratio:2/3}
+      .info-buttons{
+        left:auto;right:0; /* 살짝 오른쪽으로 */
+      }
+    }
+
+    @media (max-width: 900px){
+      .content-title{font-size:2.6rem;margin:14px 14px 0 24px}
+      .overlay-inner{flex-direction:column;align-items:center;gap:14px;max-width:95vw}
+      .overlay img{max-width:85vw;height:auto;aspect-ratio:2/3}
+      .info-box{width:min(520px, 90vw);height:auto}
+
+      /* 모바일에서는 흐름대로 아래쪽에 표시(겹침 없음) */
+      .info-buttons{
+        position:static;margin-top:12px;
+        flex-direction:row;gap:14px;
+        opacity:0;transform:translateY(10px)
+      }
       .overlay.buttons-on .info-buttons{opacity:1;transform:translateY(0)}
+      .circle{width:52px;height:52px}
+      .top-btn{width:56px;height:56px;line-height:56px;font-size:16px;right:14px;bottom:20px}
+      .back-btn{right:18px;top:14px}
+    }
+
+    @media (max-width: 520px){
+      .content-title{font-size:2.2rem;margin:12px}
+      .image-container{grid-template-columns:repeat(2, 1fr);gap:10px}
+      .circle{width:48px;height:48px}
+    }
+
+    /* 모션 민감 사용자 배려 */
+    @media (prefers-reduced-motion: reduce){
+      *{transition:none !important}
     }
   </style>
 </head>
@@ -137,6 +178,7 @@
     const musicLogo  = document.getElementById('musicLogoEl');
     const siteLink   = document.getElementById('siteLink');
 
+    // 목록 로드
     fetch(ROOT + 'meta.json?ts=' + Date.now(), { cache: 'no-store' })
       .then(r => r.json())
       .then(list => {
@@ -155,20 +197,26 @@
           frag.appendChild(img);
         });
         container.appendChild(frag);
+      })
+      .catch(e=>{
+        console.error(e);
+        container.innerHTML = '<p style="opacity:.7">이미지 목록을 불러오지 못했습니다.</p>';
       });
 
+    // 클릭 → 확대 + 순차 애니메이션
     container.addEventListener('click', e => {
       const t = e.target;
       if (t.tagName !== 'IMG') return;
 
-      overlayImg.src = t.dataset.src || t.src;
+      overlayImg.src        = t.dataset.src || t.src;
       infoTitle.textContent = t.dataset.title;
-      infoMeta.textContent = t.dataset.meta;
-      infoDesc.textContent = t.dataset.desc;
+      infoMeta.textContent  = t.dataset.meta;
+      infoDesc.textContent  = t.dataset.desc;
 
       const type = t.dataset.musictype;
-      if (type === 'youtube') musicLogo.src = 'files/logo/Youtube_music_icon.webp';
-      else musicLogo.src = 'files/logo/Spotify_icon.png';
+      musicLogo.src = (type === 'youtube')
+        ? 'files/logo/Youtube_music_icon.webp'
+        : 'files/logo/Spotify_icon.png';
 
       musicLink.href = t.dataset.music || '#';
       siteLink.href  = t.dataset.site  || '#';
@@ -177,18 +225,24 @@
       overlay.classList.add('active');
       document.body.style.overflow = 'hidden';
 
-      overlayImg.addEventListener('transitionend', () => {
-        overlay.classList.add('show-info');
-        infoBox.addEventListener('transitionend', () => {
-          overlay.classList.add('buttons-on');
-        }, { once: true });
-      }, { once: true });
+      overlayImg.addEventListener('transitionend', onImgEnd, { once: true });
     });
 
-    function closeOverlay() {
+    function onImgEnd(e){
+      if (e.propertyName !== 'transform') return;
+      overlay.classList.add('show-info');
+      infoBox.addEventListener('transitionend', onBoxEnd, { once: true });
+    }
+
+    function onBoxEnd(e){
+      if (e.propertyName !== 'opacity' && e.propertyName !== 'transform') return;
+      overlay.classList.add('buttons-on');
+    }
+
+    function closeOverlay(){
       overlay.classList.remove('buttons-on','show-info','active');
       document.body.style.overflow = '';
-      setTimeout(() => { overlayImg.removeAttribute('src'); }, 250);
+      setTimeout(()=> overlayImg.removeAttribute('src'), 250);
     }
     overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
     window.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('active')) closeOverlay(); });
